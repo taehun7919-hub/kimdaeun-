@@ -22,6 +22,7 @@ let popupReturnFocus = null;
 let adminAuthenticated = false;
 let managedPosts = Array.isArray(window.__BUSAN_FLUTE_POSTS__) ? window.__BUSAN_FLUTE_POSTS__ : [];
 let adminToken = sessionStorage.getItem("busanFluteAdminToken") || "";
+const maxImageBytes = 25 * 1024 * 1024;
 
 const routeIds = new Set(["home", ...Array.from(routeSections, (section) => section.id)]);
 const parentRouteById = {
@@ -229,8 +230,8 @@ function readImageAsDataUrl(file) {
       return;
     }
 
-    if (file.size > 2 * 1024 * 1024) {
-      reject(new Error("사진 용량은 2MB 이하로 등록해 주세요."));
+    if (file.size > maxImageBytes) {
+      reject(new Error(`사진 용량은 ${maxImageBytes / 1024 / 1024}MB 이하로 등록해 주세요.`));
       return;
     }
 

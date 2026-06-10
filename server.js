@@ -8,7 +8,9 @@ const port = Number(process.env.PORT || 4178);
 const rootDir = __dirname;
 const dataDir = process.env.DATA_DIR || path.join(rootDir, ".data");
 const dataFile = path.join(dataDir, "content.json");
-const maxJsonBytes = 8 * 1024 * 1024;
+const maxImageBytes = 25 * 1024 * 1024;
+const maxImageDataUrlBytes = Math.ceil(maxImageBytes * 1.4);
+const maxJsonBytes = Math.ceil(maxImageBytes * 1.5);
 const sessionTtlMs = 24 * 60 * 60 * 1000;
 const sessions = new Map();
 const categories = new Set(["community-notice", "board", "winners", "reviews"]);
@@ -177,8 +179,8 @@ function sanitizePost(payload) {
     throw new Error("사진 형식이 올바르지 않습니다.");
   }
 
-  if (image.length > 4 * 1024 * 1024) {
-    throw new Error("사진 용량은 2MB 이하로 등록해 주세요.");
+  if (image.length > maxImageDataUrlBytes) {
+    throw new Error(`사진 용량은 ${maxImageBytes / 1024 / 1024}MB 이하로 등록해 주세요.`);
   }
 
   return {
