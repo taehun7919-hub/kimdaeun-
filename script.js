@@ -5,6 +5,7 @@ const applicationLinks = document.querySelectorAll(".application-link");
 const sitePopup = document.querySelector("[data-site-popup]");
 const popupCloseButtons = document.querySelectorAll("[data-popup-close]");
 const hero = document.querySelector(".hero");
+const homeSections = document.querySelectorAll("[data-home-section]");
 const routeSections = document.querySelectorAll("[data-route-section]");
 const routeLinks = document.querySelectorAll('.site-nav a[href^="#"], .brand[href^="#"]');
 const internalLinks = document.querySelectorAll('a[href^="#"]');
@@ -330,6 +331,10 @@ function updateRoute(routeId = getRouteId()) {
   if (hero) {
     hero.hidden = !isHome;
   }
+
+  homeSections.forEach((section) => {
+    section.hidden = !isHome;
+  });
 
   routeSections.forEach((section) => {
     section.hidden = section.id !== activeRoute;

@@ -10,7 +10,7 @@
     />
     <meta
       name="keywords"
-      content="부산플루트콩쿠르, 부산 플루트 콩쿠르, 플루트 콩쿠르, Busan Flute Concours"
+      content="부산플루트콩쿠르, 플루트 콩쿠르, Busan Flute Concours"
     />
     <meta property="og:title" content="제1회 부산플루트콩쿠르 | Busan Flute Concours" />
     <meta
@@ -19,7 +19,7 @@
     />
     <meta property="og:type" content="website" />
     <meta property="og:image" content="assets/busan-flute-hero.png" />
-    <link rel="stylesheet" href="styles.css?v=20260611-1" />
+    <link rel="stylesheet" href="styles.css?v=20260611-5" />
   </head>
   <body>
     <a class="skip-link" href="#main">본문 바로가기</a>
@@ -43,7 +43,7 @@
         <figure class="site-popup-poster">
           <img
             src="assets/busan-flute-concours-poster.jpg"
-            alt="제1회 부산 플루트 콩쿠르 포스터. 일시 2026년 8월 22일 토요일, 장소 부산예술중학교, 접수 2026년 5월 20일부터 8월 16일까지."
+            alt="제1회 부산플루트콩쿠르 포스터. 일시 2026년 8월 22일 토요일, 장소 부산예술중학교, 접수 2026년 5월 20일부터 8월 16일까지."
           />
         </figure>
         <div class="site-popup-actions">
@@ -84,6 +84,14 @@
           <a href="#winners">역대수상자</a>
           <a href="#reviews">심사평</a>
           <a href="#contact">문의</a>
+          <a
+            class="nav-cta application-link"
+            href="https://form.naver.com/response/nxrgjk3Atk04c6peRiQpxQ"
+            target="_blank"
+            rel="noopener"
+          >
+            참가신청
+          </a>
         </nav>
       </div>
     </header>
@@ -99,11 +107,20 @@
         <div class="hero-overlay"></div>
 
         <div class="container hero-content">
-          <p class="eyebrow">Official Competition Website</p>
-          <p class="english-title">Busan Flute Concours</p>
+          <p class="eyebrow">1st Busan Flute Concours</p>
           <h1 id="hero-title">제1회 부산플루트콩쿠르</h1>
+          <p class="english-title">Busan Flute Concours</p>
           <p class="hero-copy">부산을 넘어 세계로 나아가는 젊은 플루티스트들의 무대</p>
-          <p class="hero-meta">2026. 08. 22. Sat · 부산예술중학교</p>
+          <div class="hero-meta-grid" aria-label="대회 핵심 일정">
+            <p class="hero-meta">
+              <span>Date</span>
+              <strong>2026. 08. 22. Sat</strong>
+            </p>
+            <p class="hero-meta">
+              <span>Venue</span>
+              <strong>부산예술중학교</strong>
+            </p>
+          </div>
           <div class="hero-actions" aria-label="주요 바로가기">
             <a
               class="button button-primary application-link"
@@ -118,7 +135,7 @@
         </div>
       </section>
 
-      <section class="quick-info" aria-label="대회 핵심 정보" hidden>
+      <section class="quick-info" aria-label="대회 핵심 정보" data-home-section>
         <div class="container info-grid">
           <article class="info-card">
             <span>일정</span>
@@ -197,17 +214,37 @@
 
       <section class="section about-section" id="about" aria-labelledby="about-title" data-route-section hidden>
         <div class="container about-intro">
-          <p class="section-kicker">콩쿨소개</p>
-          <img class="about-intro-logo" src="assets/busan-flute-logo.svg" alt="" aria-hidden="true" />
-          <h2 id="about-title">
-            부산플루트콩쿠르 <span>(Busan Flute Competition)</span>
-          </h2>
-          <p class="about-intro-subtitle">"부산을 넘어 세계로, 플루트의 아름다운 선율로 미래를 열다"</p>
-          <div class="about-intro-copy">
-            <p>부산플루트콩쿠르는 음악적 재능을 가진 차세대 음악가들을 발굴하고, 무대 경험을 통해 세계적인 아티스트로 성장할 수 있는 발판을 마련하고자 설립되었습니다.</p>
-            <p>아름다운 문화 예술의 도시 부산에서 개최되는 본 콩쿠르는 공정하고 객관적인 심사를 바탕으로 참가자들의 예술적 역량을 높이고,</p>
-            <p>국내외 플루트 교육 및 연주 네트워크를 확장하는 교류의 장이 되고자 합니다.</p>
-            <p>음악을 향한 순수한 열정과 깊이 있는 예술성을 지닌 젊은 플루티스트 여러분의 아름다운 도전을 기다립니다.</p>
+          <div class="section-heading centered">
+            <p class="eyebrow">About the Concours</p>
+            <img class="about-intro-logo" src="assets/busan-flute-logo.svg" alt="" aria-hidden="true" />
+            <h2 id="about-title">부산에서 시작되는 젊은 플루티스트들의 무대</h2>
+            <p>
+              부산플루트콩쿠르는 차세대 플루티스트들이 자신의 음악적 가능성을 펼칠 수 있도록 마련된
+              공정하고 품격 있는 무대입니다. 부산을 넘어 세계로 향할 젊은 음악가들의 성장을 응원합니다.
+            </p>
+          </div>
+
+          <div class="purpose-grid" aria-label="콩쿠르 핵심 가치">
+            <article class="purpose-card">
+              <span>01</span>
+              <h3>차세대 음악가 발굴</h3>
+              <p>잠재력 있는 젊은 플루티스트를 발견하고 성장의 계기를 마련합니다.</p>
+            </article>
+            <article class="purpose-card">
+              <span>02</span>
+              <h3>무대 경험 제공</h3>
+              <p>경연 무대를 통해 연주자로서의 집중력과 표현력을 넓힙니다.</p>
+            </article>
+            <article class="purpose-card">
+              <span>03</span>
+              <h3>공정한 심사</h3>
+              <p>참가자의 음악적 역량을 객관적으로 살피는 심사를 지향합니다.</p>
+            </article>
+            <article class="purpose-card">
+              <span>04</span>
+              <h3>교육·연주 네트워크 확장</h3>
+              <p>국내외 플루트 교육과 연주 교류의 장을 넓혀갑니다.</p>
+            </article>
           </div>
         </div>
       </section>
@@ -264,7 +301,7 @@
               >
                 참가신청 바로가기
               </a>
-              <a class="button button-ghost" href="#notice">공지사항 확인</a>
+              <a class="button button-ghost" href="#entry">참가요강 보기</a>
             </aside>
           </div>
         </div>
@@ -434,7 +471,7 @@
             <p class="lead">참가와 대회 운영 관련 문의는 아래 연락처로 남겨주세요.</p>
           </div>
           <div class="contact-actions">
-            <a class="contact-link" href="tel:010-5377-8101">
+            <a class="contact-link" href="tel:01053778101">
               <span>전화 문의</span>
               <strong>010-5377-8101</strong>
             </a>
@@ -543,13 +580,13 @@
           <p>Busan Flute Concours</p>
         </div>
         <address>
-          <a href="tel:010-5377-8101">010-5377-8101</a>
+          <a href="tel:01053778101">010-5377-8101</a>
           <a href="mailto:artflute09@gmail.com">artflute09@gmail.com</a>
         </address>
         <p>Copyright 2026 Busan Flute Concours. All rights reserved.</p>
       </div>
     </footer>
 
-    <script src="script.js?v=20260611-3"></script>
+    <script src="script.js?v=20260611-5"></script>
   </body>
 </html>
