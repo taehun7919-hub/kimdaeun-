@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 1024" role="img" aria-labelledby="title desc">
+  <title id="title">Busan Flute Concours Logo</title>
+  <desc id="desc">Circular wordmark reading Busan Flute Concours with a centered vertical line.</desc>
+  <defs>
+    <path id="top-arc" d="M 144 520 A 368 368 0 0 1 880 520" />
+    <path id="bottom-arc" d="M 184 630 A 328 328 0 0 0 840 630" />
+  </defs>
+  <rect width="1024" height="1024" fill="#fffdf8" />
+  <g fill="#9a887f" font-family="Georgia, 'Times New Roman', serif" font-weight="400">
+    <text font-size="112" letter-spacing="22">
+      <textPath href="#top-arc" startOffset="50%" text-anchor="middle">BUSAN FLUTE</textPath>
+    </text>
+    <text font-size="118" letter-spacing="20">
+      <textPath href="#bottom-arc" startOffset="50%" text-anchor="middle">CONCOURS</textPath>
+    </text>
+  </g>
+  <line x1="512" y1="342" x2="512" y2="690" stroke="#9a887f" stroke-width="5" stroke-linecap="round" />
+</svg>

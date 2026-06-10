@@ -1,0 +1,9 @@
+services:
+  - type: web
+    name: busan-flute-concours
+    runtime: static
+    buildCommand: mkdir -p dist && cp index.html styles.css script.js dist/ && cp -R assets dist/assets
+    staticPublishPath: dist
+    envVars:
+      - key: SKIP_INSTALL_DEPS
+        value: true
