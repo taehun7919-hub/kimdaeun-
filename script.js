@@ -8,7 +8,18 @@ const hero = document.querySelector(".hero");
 const routeSections = document.querySelectorAll("[data-route-section]");
 const routeLinks = document.querySelectorAll('.site-nav a[href^="#"], .brand[href^="#"]');
 const internalLinks = document.querySelectorAll('a[href^="#"]');
+const contentLists = document.querySelectorAll("[data-content-list]");
+const emptyPlaceholders = document.querySelectorAll("[data-empty-placeholder]");
+const adminLogin = document.querySelector("[data-admin-login]");
+const adminPanel = document.querySelector("[data-admin-panel]");
+const adminLoginForm = document.querySelector("[data-admin-login-form]");
+const adminContentForm = document.querySelector("[data-admin-content-form]");
+const adminPasswordForm = document.querySelector("[data-admin-password-form]");
+const adminPostList = document.querySelector("[data-admin-post-list]");
+const adminLogoutButton = document.querySelector("[data-admin-logout]");
+const adminExportButton = document.querySelector("[data-admin-export]");
 let popupReturnFocus = null;
+let adminAuthenticated = false;
 
 const routeIds = new Set(["home", ...Array.from(routeSections, (section) => section.id)]);
 const parentRouteById = {
@@ -19,6 +30,149 @@ const parentRouteById = {
   "community-notice": "community",
   board: "community",
 };
+const categoryLabels = {
+  "community-notice": "커뮤니티 공지사항",
+  board: "게시판",
+  winners: "역대수상자",
+  reviews: "심사평",
+};
+const adminPostsKey = "busanFluteAdminPosts";
+const adminPasswordKey = "busanFluteAdminPassword";
+
+function getAdminPassword() {
+  return localStorage.getItem(adminPasswordKey) || "0000";
+}
+
+function setAdminPassword(password) {
+  localStorage.setItem(adminPasswordKey, password);
+}
+
+function getStoredPosts() {
+  try {
+    return JSON.parse(localStorage.getItem(adminPostsKey) || "[]");
+  } catch {
+    return [];
+  }
+}
+
+function setStoredPosts(posts) {
+  localStorage.setItem(adminPostsKey, JSON.stringify(posts));
+}
+
+function formatPostDate(value) {
+  return new Intl.DateTimeFormat("ko-KR", {
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit",
+  }).format(new Date(value));
+}
+
+function escapeHtml(value) {
+  return value
+    .replaceAll("&", "&amp;")
+    .replaceAll("<", "&lt;")
+    .replaceAll(">", "&gt;")
+    .replaceAll('"', "&quot;")
+    .replaceAll("'", "&#039;");
+}
+
+function postTemplate(post, displayMode = "card") {
+  const title = escapeHtml(post.title);
+  const body = escapeHtml(post.body).replaceAll("\n", "<br />");
+  const category = categoryLabels[post.category] || "게시글";
+  const date = formatPostDate(post.createdAt);
+  const image = post.image
+    ? `<img class="managed-post-image" src="${post.image}" alt="${title}" />`
+    : "";
+
+  if (displayMode === "notice") {
+    return `
+      <article class="notice-card managed-post-card">
+        ${image}
+        <p class="notice-date">${date}</p>
+        <h3>${title}</h3>
+        <p>${body}</p>
+      </article>
+    `;
+  }
+
+  return `
+    <article class="board-item managed-post-card">
+      ${image}
+      <span>${category} · ${date}</span>
+      <h3>${title}</h3>
+      <p>${body}</p>
+    </article>
+  `;
+}
+
+function renderManagedPosts() {
+  const posts = getStoredPosts();
+
+  contentLists.forEach((list) => {
+    const category = list.dataset.contentList;
+    const categoryPosts = posts.filter((post) => post.category === category);
+    const mode = list.classList.contains("managed-post-list-grid") ? "notice" : "card";
+    list.innerHTML = categoryPosts.map((post) => postTemplate(post, mode)).join("");
+  });
+
+  emptyPlaceholders.forEach((placeholder) => {
+    const category = placeholder.dataset.emptyPlaceholder;
+    placeholder.hidden = posts.some((post) => post.category === category);
+  });
+
+  if (!adminPostList) {
+    return;
+  }
+
+  if (posts.length === 0) {
+    adminPostList.innerHTML = `<p class="admin-empty">등록된 글이 없습니다.</p>`;
+    return;
+  }
+
+  adminPostList.innerHTML = posts
+    .map(
+      (post) => `
+        <article class="admin-post-row">
+          <div>
+            <span>${categoryLabels[post.category] || "게시글"} · ${formatPostDate(post.createdAt)}</span>
+            <strong>${escapeHtml(post.title)}</strong>
+          </div>
+          <button class="button button-secondary" type="button" data-delete-post="${post.id}">삭제</button>
+        </article>
+      `
+    )
+    .join("");
+}
+
+function setAdminMode(isLoggedIn) {
+  adminAuthenticated = isLoggedIn;
+  if (adminLogin) {
+    adminLogin.hidden = isLoggedIn;
+  }
+  if (adminPanel) {
+    adminPanel.hidden = !isLoggedIn;
+  }
+}
+
+function readImageAsDataUrl(file) {
+  return new Promise((resolve, reject) => {
+    if (!file) {
+      resolve("");
+      return;
+    }
+
+    if (file.size > 2 * 1024 * 1024) {
+      reject(new Error("사진 용량은 2MB 이하로 등록해 주세요."));
+      return;
+    }
+
+    const reader = new FileReader();
+    reader.addEventListener("load", () => resolve(String(reader.result || "")));
+    reader.addEventListener("error", () => reject(new Error("사진을 읽지 못했습니다.")));
+    reader.readAsDataURL(file);
+  });
+}
 
 function getRouteId() {
   const hash = window.location.hash.replace("#", "");
@@ -66,6 +220,10 @@ function updateRoute(routeId = getRouteId()) {
 
   closeMenu();
   window.scrollTo({ top: 0, behavior: "auto" });
+
+  if (activeRoute === "admin") {
+    setAdminMode(adminAuthenticated);
+  }
 }
 
 function openRoute(routeId) {
@@ -149,8 +307,133 @@ popupCloseButtons.forEach((button) => {
   button.addEventListener("click", closePopup);
 });
 
+adminLoginForm?.addEventListener("submit", (event) => {
+  event.preventDefault();
+  const passwordInput = adminLoginForm.querySelector("[data-admin-password]");
+  const message = adminLoginForm.querySelector("[data-admin-login-message]");
+  const password = passwordInput?.value || "";
+
+  if (password === getAdminPassword()) {
+    passwordInput.value = "";
+    if (message) {
+      message.textContent = "";
+    }
+    setAdminMode(true);
+    return;
+  }
+
+  if (message) {
+    message.textContent = "비밀번호가 올바르지 않습니다.";
+  }
+});
+
+adminContentForm?.addEventListener("submit", async (event) => {
+  event.preventDefault();
+
+  if (!adminAuthenticated) {
+    return;
+  }
+
+  const category = adminContentForm.querySelector("[data-admin-category]")?.value || "board";
+  const titleInput = adminContentForm.querySelector("[data-admin-title]");
+  const bodyInput = adminContentForm.querySelector("[data-admin-body]");
+  const imageInput = adminContentForm.querySelector("[data-admin-image]");
+  const title = titleInput?.value.trim() || "";
+  const body = bodyInput?.value.trim() || "";
+
+  if (!title || !body) {
+    return;
+  }
+
+  try {
+    const image = await readImageAsDataUrl(imageInput?.files?.[0]);
+    const posts = getStoredPosts();
+    posts.unshift({
+      id: `${Date.now()}-${Math.random().toString(16).slice(2)}`,
+      category,
+      title,
+      body,
+      image,
+      createdAt: new Date().toISOString(),
+    });
+    setStoredPosts(posts);
+    adminContentForm.reset();
+    renderManagedPosts();
+    openRoute(category);
+  } catch (error) {
+    alert(error.message);
+  }
+});
+
+adminPasswordForm?.addEventListener("submit", (event) => {
+  event.preventDefault();
+  const currentInput = adminPasswordForm.querySelector("[data-current-password]");
+  const newInput = adminPasswordForm.querySelector("[data-new-password]");
+  const confirmInput = adminPasswordForm.querySelector("[data-confirm-password]");
+  const message = adminPasswordForm.querySelector("[data-password-message]");
+  const currentPassword = currentInput?.value || "";
+  const newPassword = newInput?.value || "";
+  const confirmPassword = confirmInput?.value || "";
+
+  if (currentPassword !== getAdminPassword()) {
+    if (message) {
+      message.textContent = "현재 비밀번호가 올바르지 않습니다.";
+    }
+    return;
+  }
+
+  if (newPassword.length < 4) {
+    if (message) {
+      message.textContent = "새 비밀번호는 4자리 이상으로 입력해 주세요.";
+    }
+    return;
+  }
+
+  if (newPassword !== confirmPassword) {
+    if (message) {
+      message.textContent = "새 비밀번호 확인이 일치하지 않습니다.";
+    }
+    return;
+  }
+
+  setAdminPassword(newPassword);
+  adminPasswordForm.reset();
+  if (message) {
+    message.textContent = "비밀번호가 변경되었습니다.";
+  }
+});
+
+adminPostList?.addEventListener("click", (event) => {
+  const button = event.target instanceof HTMLElement ? event.target.closest("[data-delete-post]") : null;
+  if (!button || !adminAuthenticated) {
+    return;
+  }
+
+  const postId = button.getAttribute("data-delete-post");
+  setStoredPosts(getStoredPosts().filter((post) => post.id !== postId));
+  renderManagedPosts();
+});
+
+adminLogoutButton?.addEventListener("click", () => {
+  setAdminMode(false);
+});
+
+adminExportButton?.addEventListener("click", async () => {
+  const backup = JSON.stringify(getStoredPosts(), null, 2);
+  try {
+    await navigator.clipboard.writeText(backup);
+    adminExportButton.textContent = "복사 완료";
+    window.setTimeout(() => {
+      adminExportButton.textContent = "백업 복사";
+    }, 1600);
+  } catch {
+    alert(backup);
+  }
+});
+
 window.addEventListener("load", () => {
   updateRoute();
+  renderManagedPosts();
   window.setTimeout(openPopup, 250);
 });
 
@@ -169,6 +452,7 @@ if (hero) {
 }
 
 updateRoute();
+renderManagedPosts();
 
 applicationLinks.forEach((link) => {
   link.addEventListener("click", (event) => {

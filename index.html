@@ -19,7 +19,7 @@
     />
     <meta property="og:type" content="website" />
     <meta property="og:image" content="assets/busan-flute-hero.png" />
-    <link rel="stylesheet" href="styles.css?v=20260610-3" />
+    <link rel="stylesheet" href="styles.css?v=20260610-4" />
   </head>
   <body>
     <a class="skip-link" href="#main">본문 바로가기</a>
@@ -306,6 +306,7 @@
             <h2 id="community-notice-title">커뮤니티 공지사항</h2>
           </div>
           <div class="notice-grid">
+            <div class="managed-post-list managed-post-list-grid" data-content-list="community-notice"></div>
             <article class="notice-card">
               <p class="notice-date">2026. 05. 20</p>
               <h3>제1회 부산플루트콩쿠르 접수 안내</h3>
@@ -336,7 +337,8 @@
             <p>대회 관련 안내와 자료를 순차적으로 업데이트합니다.</p>
           </div>
 
-          <div class="board-list">
+          <div class="board-list" data-content-list="board"></div>
+          <div class="board-list" data-empty-placeholder="board">
             <article class="board-item">
               <span>공지</span>
               <h3>제1회 부산플루트콩쿠르 공식 홈페이지 오픈</h3>
@@ -359,7 +361,8 @@
             <p>부산플루트콩쿠르 수상자 명단을 회차별로 안내합니다.</p>
           </div>
 
-          <div class="archive-panel">
+          <div class="archive-list" data-content-list="winners"></div>
+          <div class="archive-panel" data-empty-placeholder="winners">
             <p class="notice-date">2026</p>
             <h3>제1회 부산플루트콩쿠르</h3>
             <p>수상자 명단은 경연 종료 후 공개됩니다.</p>
@@ -375,7 +378,8 @@
             <p>경연 이후 심사평과 연주 피드백 안내를 확인할 수 있습니다.</p>
           </div>
 
-          <div class="archive-panel">
+          <div class="archive-list" data-content-list="reviews"></div>
+          <div class="archive-panel" data-empty-placeholder="reviews">
             <p class="notice-date">제1회 부산플루트콩쿠르</p>
             <h3>심사평 공개 안내</h3>
             <p>심사평은 경연 종료 후 정리하여 순차적으로 공개됩니다.</p>
@@ -439,6 +443,93 @@
               <strong>artflute09@gmail.com</strong>
             </a>
           </div>
+          <div class="admin-entry">
+            <a class="admin-entry-link" href="#admin">관리자 설정</a>
+          </div>
+        </div>
+      </section>
+
+      <section class="section admin-section" id="admin" aria-labelledby="admin-title" data-route-section hidden>
+        <div class="container admin-shell">
+          <div class="section-heading centered">
+            <p class="eyebrow">Admin</p>
+            <h2 id="admin-title">관리자 설정</h2>
+            <p>심사평, 역대수상자, 커뮤니티에 표시할 글과 사진을 관리합니다.</p>
+          </div>
+
+          <div class="admin-login" data-admin-login>
+            <form class="admin-card" data-admin-login-form>
+              <h3>관리자 로그인</h3>
+              <label>
+                <span>비밀번호</span>
+                <input type="password" data-admin-password autocomplete="current-password" inputmode="numeric" required />
+              </label>
+              <p class="admin-message" data-admin-login-message></p>
+              <button class="button button-primary" type="submit">관리자 설정 열기</button>
+            </form>
+          </div>
+
+          <div class="admin-panel" data-admin-panel hidden>
+            <div class="admin-panel-header">
+              <h3>콘텐츠 관리</h3>
+              <button class="button button-ghost" type="button" data-admin-logout>로그아웃</button>
+            </div>
+
+            <div class="admin-layout">
+              <form class="admin-card admin-content-form" data-admin-content-form>
+                <h3>글/사진 등록</h3>
+                <label>
+                  <span>카테고리</span>
+                  <select data-admin-category required>
+                    <option value="community-notice">커뮤니티 공지사항</option>
+                    <option value="board">게시판</option>
+                    <option value="winners">역대수상자</option>
+                    <option value="reviews">심사평</option>
+                  </select>
+                </label>
+                <label>
+                  <span>제목</span>
+                  <input type="text" data-admin-title maxlength="80" required />
+                </label>
+                <label>
+                  <span>내용</span>
+                  <textarea data-admin-body rows="7" required></textarea>
+                </label>
+                <label>
+                  <span>사진</span>
+                  <input type="file" data-admin-image accept="image/*" />
+                </label>
+                <p class="admin-help">사진은 선택사항입니다. 큰 사진은 브라우저 저장 용량을 많이 사용할 수 있습니다.</p>
+                <button class="button button-primary" type="submit">등록하기</button>
+              </form>
+
+              <form class="admin-card admin-password-form" data-admin-password-form>
+                <h3>비밀번호 변경</h3>
+                <label>
+                  <span>현재 비밀번호</span>
+                  <input type="password" data-current-password autocomplete="current-password" required />
+                </label>
+                <label>
+                  <span>새 비밀번호</span>
+                  <input type="password" data-new-password autocomplete="new-password" required />
+                </label>
+                <label>
+                  <span>새 비밀번호 확인</span>
+                  <input type="password" data-confirm-password autocomplete="new-password" required />
+                </label>
+                <p class="admin-message" data-password-message></p>
+                <button class="button button-secondary" type="submit">비밀번호 변경</button>
+              </form>
+            </div>
+
+            <div class="admin-card admin-posts">
+              <div class="admin-panel-header">
+                <h3>등록된 글</h3>
+                <button class="button button-secondary" type="button" data-admin-export>백업 복사</button>
+              </div>
+              <div class="admin-post-list" data-admin-post-list></div>
+            </div>
+          </div>
         </div>
       </section>
     </main>
@@ -457,6 +548,6 @@
       </div>
     </footer>
 
-    <script src="script.js?v=20260610-3"></script>
+    <script src="script.js?v=20260610-4"></script>
   </body>
 </html>
