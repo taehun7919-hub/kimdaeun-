@@ -27,6 +27,10 @@
   box-sizing: border-box;
 }
 
+[hidden] {
+  display: none !important;
+}
+
 html {
   scroll-behavior: smooth;
 }
@@ -328,8 +332,14 @@ mark {
 }
 
 .site-nav a:hover::after,
-.site-nav a:focus-visible::after {
+.site-nav a:focus-visible::after,
+.site-nav a[aria-current="page"]::after {
   transform: scaleX(1);
+}
+
+.site-nav a[aria-current="page"] {
+  color: var(--color-navy);
+  font-weight: 800;
 }
 
 .menu-toggle {
@@ -550,6 +560,10 @@ h3 {
 
 .section {
   padding: clamp(4rem, 8vw, 7rem) 0;
+}
+
+.section[data-route-section] {
+  min-height: calc(100svh - var(--header-height));
 }
 
 .two-column,
