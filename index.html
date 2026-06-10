@@ -19,7 +19,7 @@
     />
     <meta property="og:type" content="website" />
     <meta property="og:image" content="assets/busan-flute-hero.png" />
-    <link rel="stylesheet" href="styles.css" />
+    <link rel="stylesheet" href="styles.css?v=20260610-3" />
   </head>
   <body>
     <a class="skip-link" href="#main">본문 바로가기</a>
@@ -79,10 +79,10 @@
 
         <nav class="site-nav" id="site-nav" data-site-nav aria-label="주요 메뉴">
           <a href="#home">홈</a>
-          <a href="#about">콩쿠르 소개</a>
-          <a href="#entry">참가 안내</a>
-          <a href="#notice">공지사항</a>
-          <a href="#location">오시는 길</a>
+          <a href="#concours">제1회 부산플루트콩쿠르</a>
+          <a href="#community">커뮤니티</a>
+          <a href="#winners">역대수상자</a>
+          <a href="#reviews">심사평</a>
           <a href="#contact">문의</a>
         </nav>
       </div>
@@ -139,35 +139,75 @@
         </div>
       </section>
 
-      <section class="section about-section" id="about" aria-labelledby="about-title" data-route-section hidden>
-        <div class="container two-column">
-          <div class="section-heading">
-            <p class="eyebrow">About</p>
-            <h2 id="about-title">품격 있는 무대, 공정한 성장의 기회</h2>
+      <section class="section hub-section concours-hub-section" id="concours" aria-labelledby="concours-title" data-route-section hidden>
+        <div class="container">
+          <div class="section-heading centered">
+            <p class="eyebrow">1st Concours</p>
+            <h2 id="concours-title">제1회 부산플루트콩쿠르</h2>
+            <p>대회 소개, 참가 안내, 공지사항, 오시는 길을 한곳에서 확인해 주세요.</p>
           </div>
-          <div class="section-body">
-            <p class="lead">
-              부산플루트콩쿠르는 차세대 플루티스트들이 자신의 음악적 가능성을 펼칠 수 있도록 마련된
-              공정하고 품격 있는 무대입니다. 부산을 넘어 세계로 나아갈 젊은 음악가들의 성장을 응원합니다.
-            </p>
-            <div class="purpose-grid">
-              <article class="purpose-card">
-                <h3>차세대 음악가 발굴</h3>
-                <p>입시생과 젊은 연주자들이 실력을 확인하고 성장의 방향을 찾는 무대를 지향합니다.</p>
-              </article>
-              <article class="purpose-card">
-                <h3>무대 경험 제공</h3>
-                <p>공식 경연 환경에서 연주 경험을 쌓고 음악적 자신감을 넓힐 수 있도록 돕습니다.</p>
-              </article>
-              <article class="purpose-card">
-                <h3>공정한 심사</h3>
-                <p>참가자의 연주 역량이 신뢰할 수 있는 기준 안에서 평가될 수 있도록 운영합니다.</p>
-              </article>
-              <article class="purpose-card">
-                <h3>연주 네트워크 확장</h3>
-                <p>부산 지역 플루트 교육과 연주 문화가 건강하게 이어지는 기반을 마련합니다.</p>
-              </article>
-            </div>
+
+          <div class="route-card-grid">
+            <a class="route-card" href="#about">
+              <span>About</span>
+              <strong>콩쿠르 소개</strong>
+              <p>대회의 취지와 운영 방향을 확인할 수 있습니다.</p>
+            </a>
+            <a class="route-card" href="#entry">
+              <span>Entry Guide</span>
+              <strong>참가 안내</strong>
+              <p>참가 부문, 접수기간, 참가비, 과제곡을 확인할 수 있습니다.</p>
+            </a>
+            <a class="route-card" href="#notice">
+              <span>Notice</span>
+              <strong>공지사항</strong>
+              <p>접수와 대회 당일 안내 등 주요 공지를 확인할 수 있습니다.</p>
+            </a>
+            <a class="route-card" href="#location">
+              <span>Location</span>
+              <strong>오시는 길</strong>
+              <p>부산예술중학교 위치와 주차 안내를 확인할 수 있습니다.</p>
+            </a>
+          </div>
+        </div>
+      </section>
+
+      <section class="section hub-section community-section" id="community" aria-labelledby="community-title" data-route-section hidden>
+        <div class="container">
+          <div class="section-heading centered">
+            <p class="eyebrow">Community</p>
+            <h2 id="community-title">커뮤니티</h2>
+            <p>공지사항과 게시판 메뉴를 선택해 주세요.</p>
+          </div>
+
+          <div class="route-card-grid route-card-grid-compact">
+            <a class="route-card" href="#community-notice">
+              <span>Notice</span>
+              <strong>공지사항</strong>
+              <p>커뮤니티 공지와 안내사항을 확인할 수 있습니다.</p>
+            </a>
+            <a class="route-card" href="#board">
+              <span>Board</span>
+              <strong>게시판</strong>
+              <p>대회 관련 소식과 안내 글을 확인할 수 있습니다.</p>
+            </a>
+          </div>
+        </div>
+      </section>
+
+      <section class="section about-section" id="about" aria-labelledby="about-title" data-route-section hidden>
+        <div class="container about-intro">
+          <p class="section-kicker">콩쿨소개</p>
+          <img class="about-intro-logo" src="assets/busan-flute-logo.svg" alt="" aria-hidden="true" />
+          <h2 id="about-title">
+            부산플루트콩쿠르 <span>(Busan Flute Competition)</span>
+          </h2>
+          <p class="about-intro-subtitle">"부산을 넘어 세계로, 플루트의 아름다운 선율로 미래를 열다"</p>
+          <div class="about-intro-copy">
+            <p>부산플루트콩쿠르는 음악적 재능을 가진 차세대 음악가들을 발굴하고, 무대 경험을 통해 세계적인 아티스트로 성장할 수 있는 발판을 마련하고자 설립되었습니다.</p>
+            <p>아름다운 문화 예술의 도시 부산에서 개최되는 본 콩쿠르는 공정하고 객관적인 심사를 바탕으로 참가자들의 예술적 역량을 높이고,</p>
+            <p>국내외 플루트 교육 및 연주 네트워크를 확장하는 교류의 장이 되고자 합니다.</p>
+            <p>음악을 향한 순수한 열정과 깊이 있는 예술성을 지닌 젊은 플루티스트 여러분의 아름다운 도전을 기다립니다.</p>
           </div>
         </div>
       </section>
@@ -259,6 +299,90 @@
         </div>
       </section>
 
+      <section class="section community-notice-section" id="community-notice" aria-labelledby="community-notice-title" data-route-section hidden>
+        <div class="container">
+          <div class="section-heading">
+            <p class="eyebrow">Community Notice</p>
+            <h2 id="community-notice-title">커뮤니티 공지사항</h2>
+          </div>
+          <div class="notice-grid">
+            <article class="notice-card">
+              <p class="notice-date">2026. 05. 20</p>
+              <h3>제1회 부산플루트콩쿠르 접수 안내</h3>
+              <p>참가신청은 공식 네이버폼을 통해 접수하며, 참가비 입금자 성명을 정확히 입력해 주세요.</p>
+              <a href="#entry">참가 안내 보기</a>
+            </article>
+            <article class="notice-card">
+              <p class="notice-date">2026. 08. 22</p>
+              <h3>대회 당일 장소 안내</h3>
+              <p>대회는 부산예술중학교에서 진행됩니다. 방문 전 지도와 주차 안내를 확인해 주세요.</p>
+              <a href="#location">오시는 길 보기</a>
+            </article>
+            <article class="notice-card">
+              <p class="notice-date">문의</p>
+              <h3>공식 문의 채널</h3>
+              <p>대회 관련 문의는 전화 또는 이메일로 남겨주세요.</p>
+              <a href="#contact">문의하기</a>
+            </article>
+          </div>
+        </div>
+      </section>
+
+      <section class="section board-section" id="board" aria-labelledby="board-title" data-route-section hidden>
+        <div class="container">
+          <div class="section-heading centered">
+            <p class="eyebrow">Board</p>
+            <h2 id="board-title">게시판</h2>
+            <p>대회 관련 안내와 자료를 순차적으로 업데이트합니다.</p>
+          </div>
+
+          <div class="board-list">
+            <article class="board-item">
+              <span>공지</span>
+              <h3>제1회 부산플루트콩쿠르 공식 홈페이지 오픈</h3>
+              <p>참가 안내와 공지사항은 상단 메뉴에서 확인하실 수 있습니다.</p>
+            </article>
+            <article class="board-item">
+              <span>안내</span>
+              <h3>게시판 운영 안내</h3>
+              <p>대회 관련 자료와 추가 안내는 본 게시판을 통해 공유됩니다.</p>
+            </article>
+          </div>
+        </div>
+      </section>
+
+      <section class="section winners-section" id="winners" aria-labelledby="winners-title" data-route-section hidden>
+        <div class="container">
+          <div class="section-heading centered">
+            <p class="eyebrow">Winners</p>
+            <h2 id="winners-title">역대수상자</h2>
+            <p>부산플루트콩쿠르 수상자 명단을 회차별로 안내합니다.</p>
+          </div>
+
+          <div class="archive-panel">
+            <p class="notice-date">2026</p>
+            <h3>제1회 부산플루트콩쿠르</h3>
+            <p>수상자 명단은 경연 종료 후 공개됩니다.</p>
+          </div>
+        </div>
+      </section>
+
+      <section class="section reviews-section" id="reviews" aria-labelledby="reviews-title" data-route-section hidden>
+        <div class="container">
+          <div class="section-heading centered">
+            <p class="eyebrow">Jury Comments</p>
+            <h2 id="reviews-title">심사평</h2>
+            <p>경연 이후 심사평과 연주 피드백 안내를 확인할 수 있습니다.</p>
+          </div>
+
+          <div class="archive-panel">
+            <p class="notice-date">제1회 부산플루트콩쿠르</p>
+            <h3>심사평 공개 안내</h3>
+            <p>심사평은 경연 종료 후 정리하여 순차적으로 공개됩니다.</p>
+          </div>
+        </div>
+      </section>
+
       <section class="section location-section" id="location" aria-labelledby="location-title" data-route-section hidden>
         <div class="container location-layout">
           <div class="section-heading">
@@ -333,6 +457,6 @@
       </div>
     </footer>
 
-    <script src="script.js"></script>
+    <script src="script.js?v=20260610-3"></script>
   </body>
 </html>

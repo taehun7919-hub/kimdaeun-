@@ -11,6 +11,14 @@ const internalLinks = document.querySelectorAll('a[href^="#"]');
 let popupReturnFocus = null;
 
 const routeIds = new Set(["home", ...Array.from(routeSections, (section) => section.id)]);
+const parentRouteById = {
+  about: "concours",
+  entry: "concours",
+  notice: "concours",
+  location: "concours",
+  "community-notice": "community",
+  board: "community",
+};
 
 function getRouteId() {
   const hash = window.location.hash.replace("#", "");
@@ -37,6 +45,7 @@ function normalizeRouteId(routeId) {
 function updateRoute(routeId = getRouteId()) {
   const activeRoute = normalizeRouteId(routeId);
   const isHome = activeRoute === "home";
+  const activeNavRoute = parentRouteById[activeRoute] || activeRoute;
 
   if (hero) {
     hero.hidden = !isHome;
@@ -48,7 +57,7 @@ function updateRoute(routeId = getRouteId()) {
 
   routeLinks.forEach((link) => {
     const linkRoute = link.getAttribute("href")?.replace("#", "") || "home";
-    if (linkRoute === activeRoute) {
+    if (linkRoute === activeNavRoute) {
       link.setAttribute("aria-current", "page");
     } else {
       link.removeAttribute("aria-current");
@@ -145,8 +154,8 @@ window.addEventListener("load", () => {
   window.setTimeout(openPopup, 250);
 });
 
-window.addEventListener("hashchange", updateRoute);
-window.addEventListener("popstate", updateRoute);
+window.addEventListener("hashchange", () => updateRoute());
+window.addEventListener("popstate", () => updateRoute());
 
 const observer = new IntersectionObserver(
   ([entry]) => {

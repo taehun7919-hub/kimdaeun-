@@ -596,6 +596,67 @@ h3 {
   font-size: clamp(1.02rem, 2vw, 1.18rem);
 }
 
+.about-section {
+  background: var(--color-warm-white);
+}
+
+.about-intro {
+  display: grid;
+  justify-items: center;
+  text-align: center;
+}
+
+.section-kicker {
+  justify-self: stretch;
+  margin: 0 0 clamp(2.5rem, 6vw, 4.5rem);
+  color: var(--color-charcoal);
+  font-size: clamp(1.2rem, 2vw, 1.55rem);
+  font-weight: 800;
+  text-align: left;
+}
+
+.about-intro-logo {
+  width: clamp(148px, 18vw, 230px);
+  height: auto;
+  margin-bottom: clamp(4rem, 8vw, 6rem);
+  opacity: 0.58;
+}
+
+.about-intro h2 {
+  color: #090909;
+  font-family: var(--font-body);
+  font-size: clamp(2rem, 4.4vw, 3.25rem);
+  font-weight: 900;
+  line-height: 1.25;
+}
+
+.about-intro h2 span {
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: 0.66em;
+  font-weight: 800;
+}
+
+.about-intro-subtitle {
+  margin: 1.4rem 0 clamp(3rem, 6vw, 5rem);
+  color: #090909;
+  font-size: clamp(1.08rem, 2vw, 1.45rem);
+  font-weight: 900;
+}
+
+.about-intro-copy {
+  display: grid;
+  gap: 1.35rem;
+  max-width: 1160px;
+  color: #111;
+  font-size: clamp(1rem, 1.55vw, 1.28rem);
+  font-weight: 500;
+  line-height: 1.85;
+}
+
+.about-intro-copy p {
+  margin: 0;
+}
+
 .purpose-grid {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -607,11 +668,73 @@ h3 {
 .entry-panel,
 .entry-cta,
 .notice-card,
-.contact-link {
+.contact-link,
+.route-card,
+.board-item,
+.archive-panel {
   background: rgba(255, 253, 248, 0.76);
   border: 1px solid var(--color-line);
   border-radius: var(--radius-card);
   box-shadow: 0 12px 32px var(--color-shadow);
+}
+
+.hub-section,
+.winners-section {
+  background:
+    linear-gradient(180deg, rgba(19, 35, 59, 0.035), rgba(19, 35, 59, 0)),
+    var(--color-paper);
+}
+
+.route-card-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 1rem;
+  margin-top: 2rem;
+}
+
+.route-card-grid-compact {
+  max-width: 760px;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  margin-right: auto;
+  margin-left: auto;
+}
+
+.route-card {
+  display: grid;
+  gap: 0.55rem;
+  min-height: 210px;
+  padding: 1.35rem;
+  color: var(--color-charcoal);
+  text-decoration: none;
+}
+
+.route-card span,
+.board-item span {
+  color: var(--color-taupe);
+  font-size: 0.82rem;
+  font-weight: 800;
+  text-transform: uppercase;
+}
+
+.route-card strong {
+  align-self: end;
+  color: var(--color-navy);
+  font-size: clamp(1.2rem, 2.2vw, 1.55rem);
+  line-height: 1.25;
+}
+
+.route-card p,
+.board-item p,
+.archive-panel p {
+  margin: 0;
+  color: var(--color-brown);
+}
+
+.route-card:hover,
+.route-card:focus-visible {
+  transform: translateY(-2px);
+  border-color: rgba(184, 148, 77, 0.48);
+  box-shadow: 0 16px 38px rgba(31, 28, 24, 0.15);
 }
 
 .purpose-card {
@@ -756,6 +879,42 @@ h3 {
   font-weight: 800;
   text-decoration-color: rgba(184, 148, 77, 0.65);
   text-underline-offset: 0.24em;
+}
+
+.community-notice-section,
+.reviews-section {
+  background: var(--color-warm-white);
+}
+
+.board-section {
+  background:
+    linear-gradient(180deg, rgba(19, 35, 59, 0.045), rgba(19, 35, 59, 0)),
+    var(--color-paper);
+}
+
+.board-list {
+  display: grid;
+  max-width: 860px;
+  margin: 2rem auto 0;
+  gap: 0.9rem;
+}
+
+.board-item {
+  display: grid;
+  gap: 0.5rem;
+  padding: 1.35rem;
+}
+
+.board-item h3,
+.archive-panel h3 {
+  color: var(--color-navy);
+}
+
+.archive-panel {
+  max-width: 720px;
+  margin: 2rem auto 0;
+  padding: clamp(1.3rem, 3vw, 2rem);
+  text-align: center;
 }
 
 .audit-note {
@@ -932,6 +1091,10 @@ h3 {
     grid-template-columns: 1fr;
   }
 
+  .route-card-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
   .hero {
     min-height: min(680px, calc(100svh - 96px));
   }
@@ -1034,6 +1197,15 @@ h3 {
   }
 
   .info-card {
+    min-height: auto;
+  }
+
+  .route-card-grid,
+  .route-card-grid-compact {
+    grid-template-columns: 1fr;
+  }
+
+  .route-card {
     min-height: auto;
   }
 
