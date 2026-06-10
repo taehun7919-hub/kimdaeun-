@@ -20,6 +20,8 @@ const adminLogoutButton = document.querySelector("[data-admin-logout]");
 const adminExportButton = document.querySelector("[data-admin-export]");
 let popupReturnFocus = null;
 let adminAuthenticated = false;
+let managedPosts = Array.isArray(window.__BUSAN_FLUTE_POSTS__) ? window.__BUSAN_FLUTE_POSTS__ : [];
+let adminToken = sessionStorage.getItem("busanFluteAdminToken") || "";
 
 const routeIds = new Set(["home", ...Array.from(routeSections, (section) => section.id)]);
 const parentRouteById = {
@@ -36,27 +38,92 @@ const categoryLabels = {
   winners: "역대수상자",
   reviews: "심사평",
 };
-const adminPostsKey = "busanFluteAdminPosts";
-const adminPasswordKey = "busanFluteAdminPassword";
-
-function getAdminPassword() {
-  return localStorage.getItem(adminPasswordKey) || "0000";
-}
-
-function setAdminPassword(password) {
-  localStorage.setItem(adminPasswordKey, password);
+function setAdminToken(token) {
+  adminToken = token || "";
+  if (adminToken) {
+    sessionStorage.setItem("busanFluteAdminToken", adminToken);
+    return;
+  }
+  sessionStorage.removeItem("busanFluteAdminToken");
 }
 
 function getStoredPosts() {
-  try {
-    return JSON.parse(localStorage.getItem(adminPostsKey) || "[]");
-  } catch {
-    return [];
-  }
+  return managedPosts;
 }
 
 function setStoredPosts(posts) {
-  localStorage.setItem(adminPostsKey, JSON.stringify(posts));
+  managedPosts = Array.isArray(posts) ? posts : [];
+}
+
+async function apiRequest(path, options = {}) {
+  const headers = {
+    Accept: "application/json",
+    ...(options.headers || {}),
+  };
+  let requestBody = options.body;
+
+  if (adminToken) {
+    headers.Authorization = `Bearer ${adminToken}`;
+  }
+
+  if (options.body && !(options.body instanceof FormData)) {
+    headers["Content-Type"] = "application/json";
+    requestBody = JSON.stringify(options.body);
+  }
+
+  if (typeof fetch === "function") {
+    const response = await fetch(`/api${path}`, {
+      ...options,
+      headers,
+      body: requestBody,
+    });
+    const data = await response.json().catch(() => ({}));
+
+    if (!response.ok) {
+      throw new Error(data.error || "요청을 처리하지 못했습니다.");
+    }
+
+    return data;
+  }
+
+  return new Promise((resolve, reject) => {
+    if (typeof XMLHttpRequest !== "function") {
+      reject(new Error("서버와 통신할 수 없는 브라우저 환경입니다."));
+      return;
+    }
+
+    const xhr = new XMLHttpRequest();
+    xhr.open(options.method || "GET", `/api${path}`);
+    Object.entries(headers).forEach(([key, value]) => xhr.setRequestHeader(key, value));
+    xhr.onload = () => {
+      let data = {};
+      try {
+        data = JSON.parse(xhr.responseText || "{}");
+      } catch {
+        data = {};
+      }
+
+      if (xhr.status < 200 || xhr.status >= 300) {
+        reject(new Error(data.error || "요청을 처리하지 못했습니다."));
+        return;
+      }
+
+      resolve(data);
+    };
+    xhr.onerror = () => reject(new Error("서버와 통신하지 못했습니다."));
+    xhr.send(requestBody || null);
+  });
+}
+
+async function loadManagedPosts() {
+  try {
+    const data = await apiRequest("/posts");
+    setStoredPosts(data.posts);
+    renderManagedPosts();
+  } catch (error) {
+    console.error(error);
+    renderManagedPosts();
+  }
 }
 
 function formatPostDate(value) {
@@ -307,23 +374,28 @@ popupCloseButtons.forEach((button) => {
   button.addEventListener("click", closePopup);
 });
 
-adminLoginForm?.addEventListener("submit", (event) => {
+adminLoginForm?.addEventListener("submit", async (event) => {
   event.preventDefault();
   const passwordInput = adminLoginForm.querySelector("[data-admin-password]");
   const message = adminLoginForm.querySelector("[data-admin-login-message]");
   const password = passwordInput?.value || "";
 
-  if (password === getAdminPassword()) {
+  try {
+    const data = await apiRequest("/login", {
+      method: "POST",
+      body: { password },
+    });
+    setAdminToken(data.token);
     passwordInput.value = "";
     if (message) {
       message.textContent = "";
     }
     setAdminMode(true);
-    return;
-  }
-
-  if (message) {
-    message.textContent = "비밀번호가 올바르지 않습니다.";
+    await loadManagedPosts();
+  } catch (error) {
+    if (message) {
+      message.textContent = error.message;
+    }
   }
 });
 
@@ -347,16 +419,16 @@ adminContentForm?.addEventListener("submit", async (event) => {
 
   try {
     const image = await readImageAsDataUrl(imageInput?.files?.[0]);
-    const posts = getStoredPosts();
-    posts.unshift({
-      id: `${Date.now()}-${Math.random().toString(16).slice(2)}`,
+    const data = await apiRequest("/posts", {
+      method: "POST",
+      body: {
       category,
       title,
       body,
       image,
-      createdAt: new Date().toISOString(),
+      },
     });
-    setStoredPosts(posts);
+    setStoredPosts(data.posts);
     adminContentForm.reset();
     renderManagedPosts();
     openRoute(category);
@@ -365,7 +437,7 @@ adminContentForm?.addEventListener("submit", async (event) => {
   }
 });
 
-adminPasswordForm?.addEventListener("submit", (event) => {
+adminPasswordForm?.addEventListener("submit", async (event) => {
   event.preventDefault();
   const currentInput = adminPasswordForm.querySelector("[data-current-password]");
   const newInput = adminPasswordForm.querySelector("[data-new-password]");
@@ -374,13 +446,6 @@ adminPasswordForm?.addEventListener("submit", (event) => {
   const currentPassword = currentInput?.value || "";
   const newPassword = newInput?.value || "";
   const confirmPassword = confirmInput?.value || "";
-
-  if (currentPassword !== getAdminPassword()) {
-    if (message) {
-      message.textContent = "현재 비밀번호가 올바르지 않습니다.";
-    }
-    return;
-  }
 
   if (newPassword.length < 4) {
     if (message) {
@@ -396,10 +461,23 @@ adminPasswordForm?.addEventListener("submit", (event) => {
     return;
   }
 
-  setAdminPassword(newPassword);
-  adminPasswordForm.reset();
-  if (message) {
-    message.textContent = "비밀번호가 변경되었습니다.";
+  try {
+    const data = await apiRequest("/password", {
+      method: "POST",
+      body: {
+        currentPassword,
+        newPassword,
+      },
+    });
+    setAdminToken(data.token);
+    adminPasswordForm.reset();
+    if (message) {
+      message.textContent = "비밀번호가 변경되었습니다.";
+    }
+  } catch (error) {
+    if (message) {
+      message.textContent = error.message;
+    }
   }
 });
 
@@ -410,30 +488,39 @@ adminPostList?.addEventListener("click", (event) => {
   }
 
   const postId = button.getAttribute("data-delete-post");
-  setStoredPosts(getStoredPosts().filter((post) => post.id !== postId));
-  renderManagedPosts();
+  apiRequest(`/posts/${encodeURIComponent(postId)}`, { method: "DELETE" })
+    .then((data) => {
+      setStoredPosts(data.posts);
+      renderManagedPosts();
+    })
+    .catch((error) => {
+      alert(error.message);
+    });
 });
 
 adminLogoutButton?.addEventListener("click", () => {
+  setAdminToken("");
   setAdminMode(false);
 });
 
 adminExportButton?.addEventListener("click", async () => {
-  const backup = JSON.stringify(getStoredPosts(), null, 2);
   try {
+    const data = await apiRequest("/export");
+    const backup = JSON.stringify(data.posts || [], null, 2);
     await navigator.clipboard.writeText(backup);
     adminExportButton.textContent = "복사 완료";
     window.setTimeout(() => {
       adminExportButton.textContent = "백업 복사";
     }, 1600);
-  } catch {
-    alert(backup);
+  } catch (error) {
+    alert(error.message);
   }
 });
 
 window.addEventListener("load", () => {
   updateRoute();
   renderManagedPosts();
+  loadManagedPosts();
   window.setTimeout(openPopup, 250);
 });
 
@@ -453,6 +540,7 @@ if (hero) {
 
 updateRoute();
 renderManagedPosts();
+loadManagedPosts();
 
 applicationLinks.forEach((link) => {
   link.addEventListener("click", (event) => {

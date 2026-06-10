@@ -1,9 +1,14 @@
 services:
   - type: web
     name: busan-flute-concours
-    runtime: static
-    buildCommand: mkdir -p dist && cp index.html styles.css script.js dist/ && cp -R assets dist/assets
-    staticPublishPath: dist
+    runtime: node
+    buildCommand: npm install --omit=dev
+    startCommand: npm start
+    healthCheckPath: /api/health
+    disk:
+      name: content-data
+      mountPath: /var/data
+      sizeGB: 1
     envVars:
-      - key: SKIP_INSTALL_DEPS
-        value: true
+      - key: DATA_DIR
+        value: /var/data
