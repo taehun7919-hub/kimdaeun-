@@ -184,12 +184,10 @@ function sanitizePost(payload) {
   }
 
   return {
-    id: `${Date.now()}-${crypto.randomBytes(6).toString("hex")}`,
     category,
     title,
     body,
     image,
-    createdAt: new Date().toISOString(),
   };
 }
 
@@ -224,11 +222,41 @@ async function handleApi(request, response, pathname) {
 
   if (request.method === "POST" && pathname === "/api/posts") {
     const payload = await readJsonBody(request);
-    const post = sanitizePost(payload);
+    const post = {
+      id: `${Date.now()}-${crypto.randomBytes(6).toString("hex")}`,
+      ...sanitizePost(payload),
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
+    };
     const store = await readStore();
     store.posts.unshift(post);
     await writeStore(store);
     sendJson(response, 201, { post, posts: store.posts });
+    return;
+  }
+
+  if (request.method === "PUT" && pathname.startsWith("/api/posts/")) {
+    const postId = decodeURIComponent(pathname.replace("/api/posts/", ""));
+    const payload = await readJsonBody(request);
+    const store = await readStore();
+    const postIndex = store.posts.findIndex((post) => post.id === postId);
+
+    if (postIndex === -1) {
+      sendError(response, 404, "수정할 글을 찾을 수 없습니다.");
+      return;
+    }
+
+    const existingPost = store.posts[postIndex];
+    const nextPost = {
+      ...existingPost,
+      ...sanitizePost(payload),
+      id: existingPost.id,
+      createdAt: existingPost.createdAt,
+      updatedAt: new Date().toISOString(),
+    };
+    store.posts[postIndex] = nextPost;
+    await writeStore(store);
+    sendJson(response, 200, { post: nextPost, posts: store.posts });
     return;
   }
 
@@ -261,12 +289,6 @@ async function handleApi(request, response, pathname) {
     await writeStore(store);
     sessions.clear();
     sendJson(response, 200, { token: createSession() });
-    return;
-  }
-
-  if (request.method === "GET" && pathname === "/api/export") {
-    const store = await readStore();
-    sendJson(response, 200, { posts: store.posts });
     return;
   }
 

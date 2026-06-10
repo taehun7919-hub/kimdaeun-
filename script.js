@@ -17,11 +17,14 @@ const adminContentForm = document.querySelector("[data-admin-content-form]");
 const adminPasswordForm = document.querySelector("[data-admin-password-form]");
 const adminPostList = document.querySelector("[data-admin-post-list]");
 const adminLogoutButton = document.querySelector("[data-admin-logout]");
-const adminExportButton = document.querySelector("[data-admin-export]");
+const adminFormTitle = document.querySelector("[data-admin-form-title]");
+const adminSubmitButton = document.querySelector("[data-admin-submit]");
+const adminCancelEditButton = document.querySelector("[data-admin-cancel-edit]");
 let popupReturnFocus = null;
 let adminAuthenticated = false;
 let managedPosts = Array.isArray(window.__BUSAN_FLUTE_POSTS__) ? window.__BUSAN_FLUTE_POSTS__ : [];
 let adminToken = sessionStorage.getItem("busanFluteAdminToken") || "";
+let editingPostId = "";
 const maxImageBytes = 25 * 1024 * 1024;
 
 const routeIds = new Set(["home", ...Array.from(routeSections, (section) => section.id)]);
@@ -54,6 +57,10 @@ function getStoredPosts() {
 
 function setStoredPosts(posts) {
   managedPosts = Array.isArray(posts) ? posts : [];
+}
+
+function getPostById(postId) {
+  return getStoredPosts().find((post) => post.id === postId);
 }
 
 async function apiRequest(path, options = {}) {
@@ -206,11 +213,62 @@ function renderManagedPosts() {
             <span>${categoryLabels[post.category] || "게시글"} · ${formatPostDate(post.createdAt)}</span>
             <strong>${escapeHtml(post.title)}</strong>
           </div>
-          <button class="button button-secondary" type="button" data-delete-post="${post.id}">삭제</button>
+          <div class="admin-post-actions">
+            <button class="button button-secondary" type="button" data-edit-post="${post.id}">수정</button>
+            <button class="button button-secondary" type="button" data-delete-post="${post.id}">삭제</button>
+          </div>
         </article>
       `
     )
     .join("");
+}
+
+function resetContentFormMode() {
+  editingPostId = "";
+  adminContentForm?.reset();
+
+  if (adminFormTitle) {
+    adminFormTitle.textContent = "글/사진 등록";
+  }
+  if (adminSubmitButton) {
+    adminSubmitButton.textContent = "등록하기";
+  }
+  if (adminCancelEditButton) {
+    adminCancelEditButton.hidden = true;
+  }
+}
+
+function setContentFormEditMode(post) {
+  editingPostId = post.id;
+
+  const categoryInput = adminContentForm?.querySelector("[data-admin-category]");
+  const titleInput = adminContentForm?.querySelector("[data-admin-title]");
+  const bodyInput = adminContentForm?.querySelector("[data-admin-body]");
+  const imageInput = adminContentForm?.querySelector("[data-admin-image]");
+
+  if (categoryInput) {
+    categoryInput.value = post.category;
+  }
+  if (titleInput) {
+    titleInput.value = post.title;
+  }
+  if (bodyInput) {
+    bodyInput.value = post.body;
+  }
+  if (imageInput) {
+    imageInput.value = "";
+  }
+  if (adminFormTitle) {
+    adminFormTitle.textContent = "글/사진 수정";
+  }
+  if (adminSubmitButton) {
+    adminSubmitButton.textContent = "수정 저장";
+  }
+  if (adminCancelEditButton) {
+    adminCancelEditButton.hidden = false;
+  }
+
+  adminContentForm?.scrollIntoView({ behavior: "smooth", block: "start" });
 }
 
 function setAdminMode(isLoggedIn) {
@@ -419,18 +477,20 @@ adminContentForm?.addEventListener("submit", async (event) => {
   }
 
   try {
-    const image = await readImageAsDataUrl(imageInput?.files?.[0]);
-    const data = await apiRequest("/posts", {
-      method: "POST",
+    const existingPost = editingPostId ? getPostById(editingPostId) : null;
+    const selectedImage = imageInput?.files?.[0];
+    const image = selectedImage ? await readImageAsDataUrl(selectedImage) : existingPost?.image || "";
+    const data = await apiRequest(editingPostId ? `/posts/${encodeURIComponent(editingPostId)}` : "/posts", {
+      method: editingPostId ? "PUT" : "POST",
       body: {
-      category,
-      title,
-      body,
-      image,
+        category,
+        title,
+        body,
+        image,
       },
     });
     setStoredPosts(data.posts);
-    adminContentForm.reset();
+    resetContentFormMode();
     renderManagedPosts();
     openRoute(category);
   } catch (error) {
@@ -483,15 +543,33 @@ adminPasswordForm?.addEventListener("submit", async (event) => {
 });
 
 adminPostList?.addEventListener("click", (event) => {
-  const button = event.target instanceof HTMLElement ? event.target.closest("[data-delete-post]") : null;
-  if (!button || !adminAuthenticated) {
+  const target = event.target instanceof HTMLElement ? event.target : null;
+  const editButton = target?.closest("[data-edit-post]");
+  const deleteButton = target?.closest("[data-delete-post]");
+
+  if (!adminAuthenticated) {
     return;
   }
 
-  const postId = button.getAttribute("data-delete-post");
+  if (editButton) {
+    const post = getPostById(editButton.getAttribute("data-edit-post"));
+    if (post) {
+      setContentFormEditMode(post);
+    }
+    return;
+  }
+
+  if (!deleteButton) {
+    return;
+  }
+
+  const postId = deleteButton.getAttribute("data-delete-post");
   apiRequest(`/posts/${encodeURIComponent(postId)}`, { method: "DELETE" })
     .then((data) => {
       setStoredPosts(data.posts);
+      if (editingPostId === postId) {
+        resetContentFormMode();
+      }
       renderManagedPosts();
     })
     .catch((error) => {
@@ -504,18 +582,8 @@ adminLogoutButton?.addEventListener("click", () => {
   setAdminMode(false);
 });
 
-adminExportButton?.addEventListener("click", async () => {
-  try {
-    const data = await apiRequest("/export");
-    const backup = JSON.stringify(data.posts || [], null, 2);
-    await navigator.clipboard.writeText(backup);
-    adminExportButton.textContent = "복사 완료";
-    window.setTimeout(() => {
-      adminExportButton.textContent = "백업 복사";
-    }, 1600);
-  } catch (error) {
-    alert(error.message);
-  }
+adminCancelEditButton?.addEventListener("click", () => {
+  resetContentFormMode();
 });
 
 window.addEventListener("load", () => {

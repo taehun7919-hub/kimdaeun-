@@ -1130,6 +1130,13 @@ h3 {
   color: var(--color-navy);
 }
 
+.admin-form-actions,
+.admin-post-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.55rem;
+}
+
 .managed-post-list-grid {
   display: contents;
 }
